@@ -25,15 +25,46 @@ data class LabelOption(
     val emoji: String
 )
 
-val LABEL_OPTIONS = listOf(
-    LabelOption("bored", "Mindlessly scrolling without purpose", "😴"),
-    LabelOption("engaged", "Actively interested in what I'm doing", "🎯"),
-    LabelOption("distracted", "Jumping between apps without finishing anything", "🔀"),
-    LabelOption("habitual", "Using apps out of habit, not need", "🔄"),
-    LabelOption("purposeful", "Using device for a specific task", "✅"),
-    LabelOption("anxious", "Checking notifications/apps compulsively", "😰"),
-    LabelOption("procrastinating", "Avoiding something I should be doing", "⏰"),
-    LabelOption("relaxing", "Deliberately unwinding with entertainment", "😌")
+data class LabelCategory(
+    val name: String,
+    val labels: List<LabelOption>
+)
+
+val LABEL_CATEGORIES = listOf(
+    LabelCategory("Low Engagement / Lethargy", listOf(
+        LabelOption("bored", "Mindlessly scrolling without purpose", "😴"),
+        LabelOption("mindless", "Zoned out, not really processing content", "🫥"),
+        LabelOption("habitual", "Using apps out of habit, not need", "🔄"),
+        LabelOption("tired", "Too fatigued to do anything meaningful", "😪"),
+        LabelOption("numb", "Emotionally flat, just going through motions", "😶"),
+        LabelOption("autopilot", "Fingers moving but brain disengaged", "🤖")
+    )),
+    LabelCategory("Active Engagement", listOf(
+        LabelOption("engaged", "Actively interested in what I'm doing", "🎯"),
+        LabelOption("focused", "Deep concentration on a single task", "🔬"),
+        LabelOption("purposeful", "Using device for a specific goal", "✅"),
+        LabelOption("productive", "Getting real work done efficiently", "💪"),
+        LabelOption("curious", "Exploring or learning something new", "🧐"),
+        LabelOption("creative", "Making or building something", "🎨")
+    )),
+    LabelCategory("Negative States", listOf(
+        LabelOption("anxious", "Checking notifications/apps compulsively", "😰"),
+        LabelOption("distracted", "Jumping between apps without finishing anything", "🔀"),
+        LabelOption("procrastinating", "Avoiding something I should be doing", "⏰"),
+        LabelOption("frustrated", "Annoyed or stuck with what I'm doing", "😤"),
+        LabelOption("overwhelmed", "Too much information, can't process it all", "🤯"),
+        LabelOption("compulsive", "Feel unable to put the phone down", "🫠"),
+        LabelOption("guilty", "Know I should stop but I keep scrolling", "😣"),
+        LabelOption("restless", "Can't settle on any one app or task", "🦗")
+    )),
+    LabelCategory("Social & Emotional", listOf(
+        LabelOption("social", "Actively connecting with people", "💬"),
+        LabelOption("lonely", "Using phone to fill a social void", "🥺"),
+        LabelOption("escapist", "Using phone to avoid real-world problems", "🏃"),
+        LabelOption("entertained", "Genuinely enjoying content", "😄"),
+        LabelOption("relaxing", "Deliberately unwinding with entertainment", "😌"),
+        LabelOption("satisfied", "Feel good about how I just used my phone", "😊")
+    ))
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +110,8 @@ fun SelfReportScreen(onBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            var selectedCategory by remember { mutableStateOf<String?>(null) }
+
             if (submitted) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -111,39 +144,49 @@ fun SelfReportScreen(onBack: () -> Unit) {
                     Text("Submit Another")
                 }
             } else {
-                LABEL_OPTIONS.forEach { option ->
-                    val isSelected = selectedLabel == option.label
-                    Card(
-                        onClick = { selectedLabel = option.label },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) MediumBlue else SurfaceCard
-                        ),
-                        border = if (isSelected) BorderStroke(2.dp, AccentGreen) else null
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                LABEL_CATEGORIES.forEach { category ->
+                    Text(
+                        text = category.name,
+                        fontWeight = FontWeight.Bold,
+                        color = AccentCyan,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                    )
+
+                    category.labels.forEach { option ->
+                        val isSelected = selectedLabel == option.label
+                        Card(
+                            onClick = { selectedLabel = option.label },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 3.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) MediumBlue else SurfaceCard
+                            ),
+                            border = if (isSelected) BorderStroke(2.dp, AccentGreen) else null
                         ) {
-                            Text(option.emoji, fontSize = 24.sp)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = option.label.replaceFirstChar { it.uppercase() },
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isSelected) AccentGreen else TextPrimary,
-                                    fontSize = 15.sp
-                                )
-                                Text(
-                                    text = option.description,
-                                    color = TextSecondary,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            if (isSelected) {
-                                Icon(Icons.Default.Check, contentDescription = null, tint = AccentGreen)
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(option.emoji, fontSize = 22.sp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = option.label.replaceFirstChar { it.uppercase() },
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) AccentGreen else TextPrimary,
+                                        fontSize = 14.sp
+                                    )
+                                    Text(
+                                        text = option.description,
+                                        color = TextSecondary,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                                if (isSelected) {
+                                    Icon(Icons.Default.Check, contentDescription = null, tint = AccentGreen, modifier = Modifier.size(20.dp))
+                                }
                             }
                         }
                     }

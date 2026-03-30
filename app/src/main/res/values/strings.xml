@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DL Tracker</string>
+    <string name="accessibility_service_description">Digital Lethargy Tracker uses accessibility to capture tap and scroll events across apps for behavioural research. No personal content, passwords, or text input is recorded — only event types, timestamps, and screen identifiers.</string>
+    <string name="notification_channel_name">Usage Tracking</string>
+    <string name="notification_channel_desc">Persistent notification while tracking app usage</string>
+</resources>
